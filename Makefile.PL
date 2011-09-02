@@ -2,36 +2,55 @@
 use strict;
 use warnings;
 
+BEGIN { require 5.006; }
 
-
-use ExtUtils::MakeMaker 6.11;
+use ExtUtils::MakeMaker 6.30;
 
 
 
 my %WriteMakefileArgs = (
-                       'test' => {
-                                   'TESTS' => 't/*.t'
-                                 },
-                       'NAME' => 'Template::Plugin::Filter::Minify::CSS',
-                       'DISTNAME' => 'Template-Plugin-Filter-Minify-CSS',
-                       'CONFIGURE_REQUIRES' => {
-                                                 'ExtUtils::MakeMaker' => '6.11'
-                                               },
-                       'AUTHOR' => 'Michael Schout <mschout@cpan.org>',
-                       'BUILD_REQUIRES' => {},
-                       'ABSTRACT' => 'CSS::Minifier filter for Template Toolkit',
-                       'EXE_FILES' => [],
-                       'VERSION' => '0.93',
-                       'PREREQ_PM' => {
-                                        'Template' => '2.0',
-                                        'CSS::Minifier' => '0'
-                                      },
-                       'LICENSE' => 'perl'
-                     );
+  'ABSTRACT' => 'CSS::Minifier filter for Template Toolkit',
+  'AUTHOR' => 'Michael Schout <mschout@cpan.org>',
+  'BUILD_REQUIRES' => {
+    'Module::Signature' => '0',
+    'Socket' => '0',
+    'Template::Test' => '0',
+    'Test::More' => '0'
+  },
+  'CONFIGURE_REQUIRES' => {
+    'ExtUtils::MakeMaker' => '6.30'
+  },
+  'DISTNAME' => 'Template-Plugin-Filter-Minify-CSS',
+  'EXE_FILES' => [],
+  'LICENSE' => 'perl',
+  'NAME' => 'Template::Plugin::Filter::Minify::CSS',
+  'PREREQ_PM' => {
+    'CSS::Minifier' => '0',
+    'Template' => '2.0',
+    'Template::Plugin::Filter' => '0'
+  },
+  'VERSION' => '0.94',
+  'test' => {
+    'TESTS' => 't/*.t'
+  }
+);
 
 
-delete $WriteMakefileArgs{LICENSE}
-  unless eval { ExtUtils::MakeMaker->VERSION(6.31) };
+unless ( eval { ExtUtils::MakeMaker->VERSION(6.56) } ) {
+  my $br = delete $WriteMakefileArgs{BUILD_REQUIRES};
+  my $pp = $WriteMakefileArgs{PREREQ_PM};
+  for my $mod ( keys %$br ) {
+    if ( exists $pp->{$mod} ) {
+      $pp->{$mod} = $br->{$mod} if $br->{$mod} > $pp->{$mod};
+    }
+    else {
+      $pp->{$mod} = $br->{$mod};
+    }
+  }
+}
+
+delete $WriteMakefileArgs{CONFIGURE_REQUIRES}
+  unless eval { ExtUtils::MakeMaker->VERSION(6.52) };
 
 WriteMakefile(%WriteMakefileArgs);
 
